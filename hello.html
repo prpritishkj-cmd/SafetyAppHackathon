@@ -1,11 +1,318 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Safety App — Demo (HTML/CSS/JS)</title>
+  <style>
+    :root{--bg:#f4f6fb;--card:#fff;--accent:#0b5cff;--muted:#6b7280}
+    *{box-sizing:border-box;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial}
+    body{margin:0;background:var(--bg);color:#0f172a}
+    .container{max-width:1100px;margin:28px auto;padding:18px}
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(11,92,255,0.06);}
+    header{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:18px}
+    h1{margin:0;font-size:20px}
+    .muted{color:var(--muted);font-size:13px}
+    .cols{display:grid;grid-template-columns:270px 1fr;gap:18px}
+    nav .menu{display:flex;flex-direction:column;gap:8px}
+    button, input, select, textarea{font:inherit}
+    .btn{background:var(--accent);color:white;padding:8px 12px;border-radius:8px;border:0;cursor:pointer}
+    .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(11,92,255,0.12)}
+    .module{padding:12px;border-radius:10px;border:1px dashed rgba(15,23,42,0.04);cursor:pointer}
+    form{display:grid;gap:8px}
+    label{font-size:13px;color:var(--muted)}
+    input,select,textarea{padding:8px;border-radius:8px;border:1px solid #e6e9f2}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:8px;text-align:left;border-bottom:1px solid #f0f2f8;font-size:13px}
+    .small{font-size:12px}
+    .topbar{display:flex;gap:8px;align-items:center}
+    .actions{display:flex;gap:8px}
+    .hidden{display:none}
+    footer{margin-top:18px;color:var(--muted);font-size:12px}
+  </style>
 </head>
 <body>
-    Hello p
+  <div class="container">
+    <div class="card" id="authCard">
+      <header>
+        <div>
+          <h1>Safety App — Demo</h1>
+          <div class="muted">Simple demo using localStorage. Not for production.</div>
+        </div>
+      </header>
+      <div id="loginView">
+        <form id="loginForm">
+          <label>Employee ID</label>
+          <input id="empId" placeholder="e.g. E123" required />
+          <label>Password</label>
+          <input id="password" type="password" placeholder="password" required />
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn" type="submit">Sign in</button>
+            <button class="btn ghost" type="button" id="demoCred">Use demo creds</button>
+          </div>
+        </form>
+      </div>
+      <div id="appView" class="hidden">
+        <div class="topbar">
+          <div><strong id="who"></strong> <span class="muted small" id="whoRole"></span></div>
+          <div style="margin-left:auto" class="actions">
+            <button class="btn ghost" id="exportBtn">Export JSON</button>
+            <button class="btn ghost" id="importBtn">Import JSON</button>
+            <button class="btn" id="logoutBtn">Log out</button>
+          </div>
+        </div>
+        <div style="height:12px"></div>
+        <div class="cols">
+          <nav>
+            <div class="menu">
+              <div class="module" data-view="dashboard">Dashboard</div>
+              <div class="module" data-view="logUnsafe">Log Unsafe Act / Condition</div>
+              <div class="module" data-view="induction">Induction Sessions</div>
+              <div class="module" data-view="dailyTalks">Daily Safety Talks</div>
+              <div class="module" data-view="warnings">Warnings / Advisories</div>
+              <div class="module" data-view="halted">Halted Works</div>
+              <div class="module" data-view="settings">Settings</div>
+            </div>
+          </nav>
+          <main>
+            <section id="dashboardView" class="card">
+              <h3>Dashboard</h3>
+              <div class="muted small">Quick stats</div>
+              <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
+                <div class="card" style="min-width:160px">Unsafe logs<br/><strong id="statUnsafe">0</strong></div>
+                <div class="card" style="min-width:160px">Inductions<br/><strong id="statInductions">0</strong></div>
+                <div class="card" style="min-width:160px">Daily talks<br/><strong id="statTalks">0</strong></div>
+                <div class="card" style="min-width:160px">Warnings<br/><strong id="statWarnings">0</strong></div>
+                <div class="card" style="min-width:160px">Halted works<br/><strong id="statHalted">0</strong></div>
+              </div>
+            </section>
+
+            <section id="logUnsafeView" class="card hidden">
+              <h3>Log Unsafe Act / Condition</h3>
+              <form id="unsafeForm">
+                <label>Date & time</label>
+                <input id="unsafeDate" type="datetime-local" required />
+                <label>Location / Area</label>
+                <input id="unsafeLocation" placeholder="e.g. Site A - Level 2" required />
+                <label>Severity</label>
+                <select id="unsafeSeverity"><option>Low</option><option>Medium</option><option>High</option></select>
+                <label>Observed by</label>
+                <input id="unsafeObserver" placeholder="Name / ID" />
+                <label>Description</label>
+                <textarea id="unsafeDesc" rows="3" placeholder="Describe the unsafe act or condition"></textarea>
+                <label>Corrective action</label>
+                <textarea id="unsafeAction" rows="2" placeholder="What corrective action was taken / recommended"></textarea>
+                <div style="display:flex;gap:8px;margin-top:8px">
+                  <button class="btn" type="submit">Save</button>
+                  <button class="btn ghost" type="button" id="unsafeClear">Clear</button>
+                </div>
+              </form>
+              <div style="margin-top:12px">
+                <h4>Recent unsafe logs</h4>
+                <div id="unsafeList"></div>
+              </div>
+            </section>
+
+            <section id="inductionView" class="card hidden">
+              <h3>Induction Sessions</h3>
+              <form id="inductionForm">
+                <label>Date</label>
+                <input id="indDate" type="date" required />
+                <label>Duration (minutes)</label>
+                <input id="indDuration" type="number" min="1" value="60" />
+                <label>Contractor / Company</label>
+                <input id="indContractor" placeholder="Contractor name" />
+                <label>Attendance count</label>
+                <input id="indAttendance" type="number" min="0" value="0" />
+                <div style="display:flex;gap:8px;margin-top:8px">
+                  <button class="btn" type="submit">Save</button>
+                  <button class="btn ghost" type="button" id="indClear">Clear</button>
+                </div>
+              </form>
+
+              <div style="margin-top:12px">
+                <h4>Sessions</h4>
+                <div id="indList"></div>
+              </div>
+            </section>
+
+            <section id="dailyTalksView" class="card hidden">
+              <h3>Daily Safety Talks</h3>
+              <form id="talkForm">
+                <label>Date</label>
+                <input id="talkDate" type="date" required />
+                <label>Topic</label>
+                <input id="talkTopic" />
+                <label>Attendance count</label>
+                <input id="talkAttendance" type="number" min="0" value="0" />
+                <div style="display:flex;gap:8px;margin-top:8px">
+                  <button class="btn">Save</button>
+                  <button class="btn ghost" type="button" id="talkClear">Clear</button>
+                </div>
+              </form>
+              <div style="margin-top:12px">
+                <h4>Talk records</h4>
+                <div id="talkList"></div>
+              </div>
+            </section>
+
+            <section id="warningsView" class="card hidden">
+              <h3>Warnings / Advisories</h3>
+              <form id="warningForm">
+                <label>Date</label>
+                <input id="warnDate" type="date" required />
+                <label>Severity</label>
+                <select id="warnSeverity"><option>Low</option><option>Medium</option><option>High</option></select>
+                <label>Description</label>
+                <textarea id="warnDesc" rows="3"></textarea>
+                <label>Corrective action</label>
+                <textarea id="warnAction" rows="2"></textarea>
+                <div style="display:flex;gap:8px;margin-top:8px">
+                  <button class="btn">Save</button>
+                  <button class="btn ghost" type="button" id="warnClear">Clear</button>
+                </div>
+              </form>
+              <div style="margin-top:12px">
+                <h4>List</h4>
+                <div id="warnList"></div>
+              </div>
+            </section>
+
+            <section id="haltedView" class="card hidden">
+              <h3>Halted Works</h3>
+              <form id="haltForm">
+                <label>Date</label>
+                <input id="haltDate" type="date" required />
+                <label>Work / Activity</label>
+                <input id="haltActivity" />
+                <label>Reason</label>
+                <textarea id="haltReason" rows="2"></textarea>
+                <label>Corrective action</label>
+                <textarea id="haltAction" rows="2"></textarea>
+                <div style="display:flex;gap:8px;margin-top:8px">
+                  <button class="btn">Save</button>
+                  <button class="btn ghost" type="button" id="haltClear">Clear</button>
+                </div>
+              </form>
+              <div style="margin-top:12px">
+                <h4>List</h4>
+                <div id="haltList"></div>
+              </div>
+            </section>
+
+            <section id="settingsView" class="card hidden">
+              <h3>Settings</h3>
+              <p class="muted">Manage app data</p>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <button class="btn ghost" id="clearAll">Clear all data</button>
+                <button class="btn ghost" id="downloadCSV">Download CSV (unsafe logs)</button>
+              </div>
+            </section>
+
+          </main>
+        </div>
+        <footer>Demo app — data stored in your browser's localStorage. Use Export to backup.</footer>
+      </div>
+    </div>
+  </div>
+
+<script>
+// --- Simple client-side app using localStorage ---
+const STORAGE_KEY = 'safety_app_v1';
+let state = { users: [{id:'E001',name:'Demo User',password:'password',role:'Employee'}], current:null,
+  unsafe:[], inductions:[], talks:[], warnings:[], halted:[] };
+
+function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}
+function loadState(){const d=localStorage.getItem(STORAGE_KEY); if(d){state=JSON.parse(d)} else saveState()}
+loadState();
+
+// Auth
+const authCard=document.getElementById('authCard');
+const loginForm=document.getElementById('loginForm');
+const empId=document.getElementById('empId');
+const password=document.getElementById('password');
+const demoCred=document.getElementById('demoCred');
+const appView=document.getElementById('appView');
+const loginView=document.getElementById('loginView');
+const who=document.getElementById('who');
+
+function renderApp(){if(!state.current){authCard.querySelector('#appView').classList.add('hidden');authCard.querySelector('#loginView').classList.remove('hidden');return}
+  authCard.querySelector('#appView').classList.remove('hidden');authCard.querySelector('#loginView').classList.add('hidden');
+  who.textContent = state.current.name + ' ('+state.current.id+')';
+  document.getElementById('whoRole').textContent = state.current.role || '';
+  updateStats();renderAllLists();showView('dashboard'); }
+
+loginForm.addEventListener('submit',e=>{e.preventDefault(); const id=empId.value.trim(); const pw=password.value; const user = state.users.find(u=>u.id===id && u.password===pw); if(user){state.current=user; saveState(); renderApp();} else{alert('Invalid credentials. Use Demo: E001 / password or click Use demo creds.')}})
+
+demoCred.addEventListener('click',()=>{empId.value='E001'; password.value='password';})
+
+document.getElementById('logoutBtn').addEventListener('click',()=>{state.current=null; saveState(); renderApp();})
+
+// Navigation
+document.querySelectorAll('[data-view]').forEach(el=>el.addEventListener('click',()=>showView(el.dataset.view)));
+function showView(name){document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden')); const id = {dashboard:'dashboardView',logUnsafe:'logUnsafeView',induction:'inductionView',dailyTalks:'dailyTalksView',warnings:'warningsView',halted:'haltedView',settings:'settingsView',}.hasOwnProperty(name) ? {dashboard:'dashboardView',logUnsafe:'logUnsafeView',induction:'inductionView',dailyTalks:'dailyTalksView',warnings:'warningsView',halted:'haltedView',settings:'settingsView'}[name] : 'dashboardView'; document.getElementById(id).classList.remove('hidden') }
+
+// Unsafe logs
+const unsafeForm=document.getElementById('unsafeForm');
+unsafeForm.addEventListener('submit',e=>{e.preventDefault(); const rec={id:Date.now(),date:document.getElementById('unsafeDate').value,location:document.getElementById('unsafeLocation').value,severity:document.getElementById('unsafeSeverity').value,observer:document.getElementById('unsafeObserver').value,desc:document.getElementById('unsafeDesc').value,action:document.getElementById('unsafeAction').value,reportedBy: state.current? state.current.id: 'unknown'}; state.unsafe.unshift(rec); saveState(); renderUnsafeList(); updateStats(); unsafeForm.reset();});
+
+document.getElementById('unsafeClear').addEventListener('click',()=>unsafeForm.reset());
+
+function renderUnsafeList(){const el=document.getElementById('unsafeList'); if(!state.unsafe.length){el.innerHTML='<div class="muted small">No records</div>';return} let html='<table><thead><tr><th>Date</th><th>Location</th><th>Severity</th><th>Observer</th><th>Action</th></tr></thead><tbody>'; state.unsafe.slice(0,50).forEach(r=>{html+=`<tr><td class="small">${r.date||''}</td><td>${escapeHtml(r.location)}</td><td>${r.severity}</td><td>${escapeHtml(r.observer)}</td><td class="small">${escapeHtml(r.action||'')}</td></tr>`}); html+='</tbody></table>'; el.innerHTML=html }
+
+// Inductions
+const indForm=document.getElementById('inductionForm');
+indForm.addEventListener('submit',e=>{e.preventDefault(); const rec={id:Date.now(),date:document.getElementById('indDate').value,duration:parseInt(document.getElementById('indDuration').value||0),contractor:document.getElementById('indContractor').value,attendance:parseInt(document.getElementById('indAttendance').value||0)}; state.inductions.unshift(rec); saveState(); renderIndList(); updateStats(); indForm.reset();});
+
+document.getElementById('indClear').addEventListener('click',()=>indForm.reset());
+function renderIndList(){const el=document.getElementById('indList'); if(!state.inductions.length){el.innerHTML='<div class="muted small">No sessions</div>';return} let html='<table><thead><tr><th>Date</th><th>Contractor</th><th>Duration</th><th>Attendance</th></tr></thead><tbody>'; state.inductions.slice(0,50).forEach(r=>{html+=`<tr><td>${r.date}</td><td>${escapeHtml(r.contractor)}</td><td>${r.duration} min</td><td>${r.attendance}</td></tr>`}); html+='</tbody></table>'; el.innerHTML=html }
+
+// Daily talks
+const talkForm=document.getElementById('talkForm');
+talkForm.addEventListener('submit',e=>{e.preventDefault(); const rec={id:Date.now(),date:document.getElementById('talkDate').value,topic:document.getElementById('talkTopic').value,attendance:parseInt(document.getElementById('talkAttendance').value||0)}; state.talks.unshift(rec); saveState(); renderTalkList(); updateStats(); talkForm.reset();});
+document.getElementById('talkClear').addEventListener('click',()=>talkForm.reset());
+function renderTalkList(){const el=document.getElementById('talkList'); if(!state.talks.length){el.innerHTML='<div class="muted small">No records</div>';return} let html='<table><thead><tr><th>Date</th><th>Topic</th><th>Attendance</th></tr></thead><tbody>'; state.talks.slice(0,50).forEach(r=>{html+=`<tr><td>${r.date}</td><td>${escapeHtml(r.topic)}</td><td>${r.attendance}</td></tr>`}); html+='</tbody></table>'; el.innerHTML=html }
+
+// Warnings
+const warnForm=document.getElementById('warningForm');
+warnForm.addEventListener('submit',e=>{e.preventDefault(); const rec={id:Date.now(),date:document.getElementById('warnDate').value,severity:document.getElementById('warnSeverity').value,desc:document.getElementById('warnDesc').value,action:document.getElementById('warnAction').value}; state.warnings.unshift(rec); saveState(); renderWarnList(); updateStats(); warnForm.reset();});
+document.getElementById('warnClear').addEventListener('click',()=>warnForm.reset());
+function renderWarnList(){const el=document.getElementById('warnList'); if(!state.warnings.length){el.innerHTML='<div class="muted small">No records</div>';return} let html='<table><thead><tr><th>Date</th><th>Severity</th><th>Description</th></tr></thead><tbody>'; state.warnings.slice(0,50).forEach(r=>{html+=`<tr><td>${r.date}</td><td>${r.severity}</td><td>${escapeHtml(r.desc)}</td></tr>`}); html+='</tbody></table>'; el.innerHTML=html }
+
+// Halted works
+const haltForm=document.getElementById('haltForm');
+haltForm.addEventListener('submit',e=>{e.preventDefault(); const rec={id:Date.now(),date:document.getElementById('haltDate').value,activity:document.getElementById('haltActivity').value,reason:document.getElementById('haltReason').value,action:document.getElementById('haltAction').value}; state.halted.unshift(rec); saveState(); renderHaltList(); updateStats(); haltForm.reset();});
+document.getElementById('haltClear').addEventListener('click',()=>haltForm.reset());
+function renderHaltList(){const el=document.getElementById('haltList'); if(!state.halted.length){el.innerHTML='<div class="muted small">No records</div>';return} let html='<table><thead><tr><th>Date</th><th>Activity</th><th>Reason</th></tr></thead><tbody>'; state.halted.slice(0,50).forEach(r=>{html+=`<tr><td>${r.date}</td><td>${escapeHtml(r.activity)}</td><td>${escapeHtml(r.reason)}</td></tr>`}); html+='</tbody></table>'; el.innerHTML=html }
+
+// Utilities
+function escapeHtml(s){if(!s) return ''; return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}
+
+function updateStats(){document.getElementById('statUnsafe').textContent = state.unsafe.length; document.getElementById('statInductions').textContent = state.inductions.length; document.getElementById('statTalks').textContent = state.talks.length; document.getElementById('statWarnings').textContent = state.warnings.length; document.getElementById('statHalted').textContent = state.halted.length}
+
+function renderAllLists(){renderUnsafeList(); renderIndList(); renderTalkList(); renderWarnList(); renderHaltList();}
+
+// Export / Import
+document.getElementById('exportBtn').addEventListener('click',()=>{const data = JSON.stringify(state,null,2); const blob = new Blob([data],{type:'application/json'}); const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='safety-app-backup.json'; a.click(); URL.revokeObjectURL(url);});
+
+document.getElementById('importBtn').addEventListener('click',()=>{const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json'; inp.onchange = ()=>{const f=inp.files[0]; if(!f) return; const reader=new FileReader(); reader.onload=()=>{try{const d=JSON.parse(reader.result); // basic merge: overwrite
+        state = Object.assign({}, state, d); saveState(); renderApp(); alert('Imported. Note: this overwrote in-browser data.'); }catch(err){alert('Invalid JSON')}}; reader.readAsText(f);}; inp.click();});
+
+// Clear all
+document.getElementById('clearAll').addEventListener('click',()=>{if(!confirm('Clear all app data in this browser? This cannot be undone.')) return; state={users:state.users,current:null,unsafe:[],inductions:[],talks:[],warnings:[],halted:[]}; saveState(); renderApp();});
+
+// CSV download for unsafe logs
+function toCSV(arr){if(!arr.length) return '';
+  const keys=['date','location','severity','observer','desc','action','reportedBy'];
+  const rows=[keys.join(',')];
+  arr.forEach(r=>{rows.push(keys.map(k=>`"${String(r[k]||'').replace(/"/g,'""')}"`).join(','))});
+  return rows.join('\n');}
+
+document.getElementById('downloadCSV').addEventListener('click',()=>{const csv=toCSV(state.unsafe); if(!csv){alert('No unsafe logs'); return} const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='unsafe-logs.csv'; a.click(); URL.revokeObjectURL(url);});
+
+// Initial render
+if(!state.users.length){state.users.push({id:'E001',name:'Demo User',password:'password',role:'Employee'}); saveState()} renderApp();
+
+</script>
 </body>
 </html>
