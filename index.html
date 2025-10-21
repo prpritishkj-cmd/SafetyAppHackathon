@@ -1,0 +1,2065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafetyPro - Construction Safety Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            color: #333;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #555;
+            font-weight: 500;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .btn-nav {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .btn-nav:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            padding: 100px 40px 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            top: -250px;
+            right: -250px;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            bottom: -150px;
+            left: -150px;
+        }
+
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5em;
+            color: white;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero-content p {
+            font-size: 1.3em;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #667eea;
+            padding: 18px 40px;
+            border-radius: 30px;
+            border: none;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            padding: 18px 40px;
+            border-radius: 30px;
+            border: 2px solid white;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .dashboard-preview {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+        }
+
+        .preview-header {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .preview-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ddd;
+        }
+
+        .preview-content {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 300px;
+        }
+
+        .preview-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Login Page */
+        .login-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .login-box {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 60px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .login-box h2 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2em;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-back {
+            background: #6c757d;
+            margin-top: 10px;
+        }
+
+        /* Dashboard */
+        .dashboard {
+            min-height: 100vh;
+            background: #f8f9fa;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .content {
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .module-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+
+        .module-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .module-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .module-card p {
+            color: #777;
+            font-size: 0.9em;
+        }
+
+        /* Module Form Pages */
+        .form-container {
+            max-width: 900px;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.1);
+        }
+
+        .form-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .form-header h2 {
+            color: #333;
+            font-size: 1.8em;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        .severity-options {
+            display: flex;
+            gap: 15px;
+        }
+
+        .severity-option {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .severity-option:hover {
+            border-color: #667eea;
+        }
+
+        .severity-option.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .severity-low.selected { background: #28a745; border-color: #28a745; }
+        .severity-medium.selected { background: #ffc107; border-color: #ffc107; color: #333; }
+        .severity-high.selected { background: #dc3545; border-color: #dc3545; }
+
+        /* Reports Page */
+        .filter-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .report-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .report-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .report-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .badge-success { background: #d4edda; color: #155724; }
+        .badge-warning { background: #fff3cd; color: #856404; }
+        .badge-danger { background: #f8d7da; color: #721c24; }
+        .badge-info { background: #d1ecf1; color: #0c5460; }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #c3e6cb;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .btn-submit {
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .hero-container {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row,
+            .filter-row {
+                grid-template-columns: 1fr;
+            }
+
+            .module-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Landing Page -->
+    <div class="page active" id="landingPage">
+        <nav>
+            <div class="nav-container">
+                <div class="logo" onclick="showPage('landingPage')">🛡️ SafetyPro</div>
+                <div class="nav-links">
+                    <a onclick="showPage('landingPage')">Home</a>
+                    <a>Features</a>
+                    <a>Modules</a>
+                    <a>Contact</a>
+                    <button class="btn-nav" onclick="showPage('loginPage')">Login</button>
+                </div>
+            </div>
+        </nav>
+
+        <section class="hero">
+            <div class="hero-container">
+                <div class="hero-content">
+                    <h1>Construction Safety Made Simple</h1>
+                    <p>Comprehensive safety management system for modern construction sites. Track incidents, manage training, and ensure compliance in real-time.</p>
+                    <div class="hero-buttons">
+                        <button class="btn-primary" onclick="showPage('loginPage')">Get Started</button>
+                        <button class="btn-secondary">Watch Demo</button>
+                    </div>
+                </div>
+                <div>
+                    <div class="dashboard-preview">
+                        <div class="preview-header">
+                            <div class="preview-dot"></div>
+                            <div class="preview-dot"></div>
+                            <div class="preview-dot"></div>
+                        </div>
+                        <div class="preview-content">
+                            <div style="margin-bottom: 20px; font-weight: 600; color: #333;">Today's Activity</div>
+                            <div class="preview-item">
+                                <div>
+                                    <div style="font-weight: 600;">Safety Observation</div>
+                                    <div style="font-size: 0.85em; color: #666;">Building A - Floor 5</div>
+                                </div>
+                                <span class="badge badge-warning">Pending</span>
+                            </div>
+                            <div class="preview-item">
+                                <div>
+                                    <div style="font-weight: 600;">Daily Training</div>
+                                    <div style="font-size: 0.85em; color: #666;">23 Attendees</div>
+                                </div>
+                                <span class="badge badge-success">Completed</span>
+                            </div>
+                            <div class="preview-item">
+                                <div>
+                                    <div style="font-weight: 600;">Near Miss Report</div>
+                                    <div style="font-size: 0.85em; color: #666;">Excavation Zone</div>
+                                </div>
+                                <span class="badge badge-success">Closed</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Login Page -->
+    <div class="page" id="loginPage">
+        <div class="login-container">
+            <div class="login-box">
+                <h2>🛡️ SafetyPro Login</h2>
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>Employee ID</label>
+                        <input type="text" id="empId" placeholder="Enter your employee ID" value="EMP001" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="password" placeholder="Enter your password" value="demo123" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Project</label>
+                        <select id="project" required>
+                            <option value="">Select Project</option>
+                            <option value="Metro Rail - Phase 3">Metro Rail - Phase 3</option>
+                            <option value="Highway Expansion - NH47">Highway Expansion - NH47</option>
+                            <option value="Commercial Complex - CBD">Commercial Complex - CBD</option>
+                            <option value="Residential Township">Residential Township - Green Valley</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">Login</button>
+                    <button type="button" class="btn btn-back" onclick="showPage('landingPage')">Back to Home</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="page" id="dashboardPage">
+        <div class="dashboard">
+            <div class="header">
+                <h1>🛡️ Safety Management Dashboard</h1>
+                <div class="user-info">
+                    <span id="userName">John Doe - Safety Officer</span>
+                    <button class="logout-btn" onclick="showPage('loginPage')">Logout</button>
+                </div>
+            </div>
+            <div class="content">
+                <h2 style="color: #333; margin-bottom: 10px;">Safety Activity Modules</h2>
+                <p style="color: #777; margin-bottom: 20px;">Select a module to record safety activities</p>
+                
+                <div class="module-grid">
+                    <div class="module-card" onclick="showPage('safetyObservation')">
+                        <div class="module-icon">👁️</div>
+                        <h3>Safety Observation</h3>
+                        <p>Log unsafe acts or conditions</p>
+                    </div>
+                    <div class="module-card" onclick="showPage('inductionTraining')">
+                        <div class="module-icon">📋</div>
+                        <h3>Induction Training</h3>
+                        <p>New employee inductions</p>
+                    </div>
+                    <div class="module-card" onclick="showPage('dailyTraining')">
+                        <div class="module-icon">💬</div>
+                        <h3>Daily Training Talk</h3>
+                        <p>Record daily safety talks</p>
+                    </div>
+                    <div class="module-card" onclick="showPage('pepTalk')">
+                        <div class="module-icon">📢</div>
+                        <h3>PEP Talk</h3>
+                        <p>Pre-job safety briefings</p>
+                    </div>
+                    <div class="module-card" onclick="showPage('specialTraining')">
+                        <div class="module-icon">🎓</div>
+                        <h3>Special Training</h3>
+                        <p>Specialized safety training</p>
+                    </div>
+                    <div class="module-card" onclick="showPage('safetyAdvisory')">
+                        <div class="module-icon">⚠️</div>
+                        <h3>Safety Advisory (SAW)</h3>
+                        <p>Issue warnings and advisories</p>
+                    </div>
+                    <div class="module-card" onclick="showPage('stopWork')">
+                        <div class="module-icon">🛑</div>
+                        <h3>Stop Work Order</h3>
+                        <p>Halt unsafe work activities</p>
+                    </div>
+                    <div class="module-card" onclick="showPage('firstAid')">
+                        <div class="module-icon">🏥</div>
+                        <h3>First-Aid Case</h3>
+                        <p>Log minor injury incidents</p>
+                    </div>
+                    <div class="module-card" onclick="showPage('nearMiss')">
+                        <div class="module-icon">⚡</div>
+                        <h3>Near Miss Report</h3>
+                        <p>Potential incident reporting</p>
+                    </div>
+                    <div class="module-card" onclick="showPage('dangerousOccurrence')">
+                        <div class="module-icon">💥</div>
+                        <h3>Dangerous Occurrence</h3>
+                        <p>Major incident logging</p>
+                    </div>
+                    <div class="module-card" onclick="showPage('sicMeeting')">
+                        <div class="module-icon">👥</div>
+                        <h3>SIC Meeting</h3>
+                        <p>Site safety meetings</p>
+                    </div>
+                    <div class="module-card" onclick="showPage('goodPractice')">
+                        <div class="module-icon">⭐</div>
+                        <h3>Good Practice</h3>
+                        <p>Record positive practices</p>
+                    </div>
+                    <div class="module-card" onclick="showPage('rectification')">
+                        <div class="module-icon">✅</div>
+                        <h3>Rectification</h3>
+                        <p>Track corrective actions</p>
+                    </div>
+                    <div class="module-card" onclick="showPage('reports')">
+                        <div class="module-icon">📊</div>
+                        <h3>Reports & Analytics</h3>
+                        <p>View data and summaries</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Safety Observation Module -->
+    <div class="page" id="safetyObservation">
+        <div class="dashboard">
+            <div class="header">
+                <h1>Safety Observation</h1>
+                <button class="logout-btn" onclick="showPage('dashboardPage')">← Back to Dashboard</button>
+            </div>
+            <div class="content">
+                <div class="form-container">
+                    <div class="form-header">
+                        <h2>Log Safety Observation</h2>
+                    </div>
+                    <form id="safetyObsForm" onsubmit="handleSubmit(event, 'Safety Observation')">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Date & Time *</label>
+                                <input type="datetime-local" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Location *</label>
+                                <input type="text" placeholder="Building/Floor/Zone" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Observation Type *</label>
+                                <select required>
+                                    <option value="">Select type</option>
+                                    <option value="unsafe_act">Unsafe Act</option>
+                                    <option value="unsafe_condition">Unsafe Condition</option>
+                                    <option value="ppe_violation">PPE Violation</option>
+                                    <option value="housekeeping">Housekeeping Issue</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Category *</label>
+                                <select required>
+                                    <option value="">Select category</option>
+                                    <option value="fall">Fall Hazard</option>
+                                    <option value="electrical">Electrical Safety</option>
+                                    <option value="machinery">Machinery Safety</option>
+                                    <option value="fire">Fire Safety</option>
+                                    <option value="chemical">Chemical Safety</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Severity Level *</label>
+                                <div class="severity-options">
+                                    <div class="severity-option severity-low" onclick="selectSeverity(this, 'low')">
+                                        <strong>Low</strong><br>Minor risk
+                                    </div>
+                                    <div class="severity-option severity-medium" onclick="selectSeverity(this, 'medium')">
+                                        <strong>Medium</strong><br>Moderate risk
+                                    </div>
+                                    <div class="severity-option severity-high" onclick="selectSeverity(this, 'high')">
+                                        <strong>High</strong><br>Serious risk
+                                    </div>
+                                </div>
+                                <input type="hidden" id="severityValue" required>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Description of Observation *</label>
+                                <textarea placeholder="Describe what was observed..." required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Immediate Action Taken</label>
+                                <textarea placeholder="What action was taken immediately?"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Person Responsible</label>
+                                <input type="text" placeholder="Name of responsible person">
+                            </div>
+                            <div class="form-group">
+                                <label>Target Closure Date</label>
+                                <input type="date">
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-submit">Submit Observation</button>
+                            <button type="button" class="btn btn-back" onclick="showPage('dashboardPage')">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Induction Training Module -->
+    <div class="page" id="inductionTraining">
+        <div class="dashboard">
+            <div class="header">
+                <h1>Induction Training</h1>
+                <button class="logout-btn" onclick="showPage('dashboardPage')">← Back to Dashboard</button>
+            </div>
+            <div class="content">
+                <div class="form-container">
+                    <div class="form-header">
+                        <h2>Record Induction Training</h2>
+                    </div>
+                    <form onsubmit="handleSubmit(event, 'Induction Training')">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Date *</label>
+                                <input type="date" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Duration (hours) *</label>
+                                <input type="number" step="0.5" min="0.5" placeholder="e.g., 2.5" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Contractor/Company *</label>
+                                <input type="text" placeholder="Company name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Number of Attendees *</label>
+                                <input type="number" min="1" placeholder="e.g., 15" required>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Trainer Name *</label>
+                                <input type="text" placeholder="Name of trainer" required>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Topics Covered *</label>
+                                <textarea placeholder="List all topics covered in the induction..." required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Additional Notes</label>
+                                <textarea placeholder="Any additional remarks or observations"></textarea>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-submit">Submit Training Record</button>
+                            <button type="button" class="btn btn-back" onclick="showPage('dashboardPage')">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Daily Training Talk Module -->
+    <div class="page" id="dailyTraining">
+        <div class="dashboard">
+            <div class="header">
+                <h1>Daily Training Talk</h1>
+                <button class="logout-btn" onclick="showPage('dashboardPage')">← Back to Dashboard</button>
+            </div>
+            <div class="content">
+                <div class="form-container">
+                    <div class="form-header">
+                        <h2>Record Daily Training Talk</h2>
+                    </div>
+                    <form onsubmit="handleSubmit(event, 'Daily Training Talk')">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Date *</label>
+                                <input type="date" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Time *</label>
+                                <input type="time" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Location *</label>
+                                <input type="text" placeholder="Site location" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Number of Attendees *</label>
+                                <input type="number" min="1" placeholder="e.g., 25" required>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Topic/Subject *</label>
+                                <input type="text" placeholder="Main topic discussed" required>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Key Points Discussed *</label>
+                                <textarea placeholder="Detail the key safety points covered..." required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Conducted By *</label>
+                                <input type="text" placeholder="Name of person who conducted the talk" required>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-submit">Submit Training Talk</button>
+                            <button type="button" class="btn btn-back" onclick="showPage('dashboardPage')">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PEP Talk Module -->
+    <div class="page" id="pepTalk">
+        <div class="dashboard">
+            <div class="header">
+                <h1>PEP Talk (Pre-Job Briefing)</h1>
+                <button class="logout-btn" onclick="showPage('dashboardPage')">← Back to Dashboard</button>
+            </div>
+            <div class="content">
+                <div class="form-container">
+                    <div class="form-header">
+                        <h2>Record PEP Talk</h2>
+                    </div>
+                    <form onsubmit="handleSubmit(event, 'PEP Talk')">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Date *</label>
+                                <input type="date" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Time *</label>
+                                <input type="time" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Work Activity/Task *</label>
+                                <input type="text" placeholder="Type of work to be performed" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Location *</label>
+                                <input type="text" placeholder="Work location" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Team/Crew Size *</label>
+                                <input type="number" min="1" placeholder="Number of workers" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Supervisor *</label>
+                                <input type="text" placeholder="Supervising officer" required>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Hazards Identified *</label>
+                                <textarea placeholder="List all potential hazards for this task..." required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Safety Precautions Discussed *</label>
+                                <textarea placeholder="Safety measures and precautions explained..." required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>PPE Required *</label>
+                                <input type="text" placeholder="e.g., Helmet, Safety Harness, Gloves" required>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-submit">Submit PEP Talk</button>
+                            <button type="button" class="btn btn-back" onclick="showPage('dashboardPage')">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Special Technical Training Module -->
+    <div class="page" id="specialTraining">
+        <div class="dashboard">
+            <div class="header">
+                <h1>Special Technical Training</h1>
+                <button class="logout-btn" onclick="showPage('dashboardPage')">← Back to Dashboard</button>
+            </div>
+            <div class="content">
+                <div class="form-container">
+                    <div class="form-header">
+                        <h2>Record Special Training</h2>
+                    </div>
+                    <form onsubmit="handleSubmit(event, 'Special Technical Training')">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Date *</label>
+                                <input type="date" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Duration (hours) *</label>
+                                <input type="number" step="0.5" min="0.5" required>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Training Type *</label>
+                                <select required>
+                                    <option value="">Select training type</option>
+                                    <option value="height">Working at Height</option>
+                                    <option value="confined">Confined Space Entry</option>
+                                    <option value="electrical">Electrical Safety</option>
+                                    <option value="excavation">Excavation Safety</option>
+                                    <option value="scaffolding">Scaffolding</option>
+                                    <option value="crane">Crane Operations</option>
+                                    <option value="fire">Fire Safety</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Trainer/Instructor *</label>
+                                <input type="text" placeholder="Name of trainer" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Number of Participants *</label>
+                                <input type="number" min="1" required>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Training Content *</label>
+                                <textarea placeholder="Describe the training content and modules covered..." required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Certification Issued</label>
+                                <select>
+                                    <option value="">Select option</option>
+                                    <option value="yes">Yes - Certification Provided</option>
+                                    <option value="no">No - Attendance Only</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-submit">Submit Training Record</button>
+                            <button type="button" class="btn btn-back" onclick="showPage('dashboardPage')">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Safety Advisory Warning Module -->
+    <div class="page" id="safetyAdvisory">
+        <div class="dashboard">
+            <div class="header">
+                <h1>Safety Advisory Warning (SAW)</h1>
+                <button class="logout-btn" onclick="showPage('dashboardPage')">← Back to Dashboard</button>
+            </div>
+            <div class="content">
+                <div class="form-container">
+                    <div class="form-header">
+                        <h2>Issue Safety Advisory</h2>
+                    </div>
+                    <form onsubmit="handleSubmit(event, 'Safety Advisory Warning')">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Date & Time *</label>
+                                <input type="datetime-local" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Location *</label>
+                                <input type="text" placeholder="Specific location" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Issued To *</label>
+                                <input type="text" placeholder="Contractor/Person name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Warning Type *</label>
+                                <select required>
+                                    <option value="">Select type</option>
+                                    <option value="verbal">Verbal Warning</option>
+                                    <option value="written">Written Warning</option>
+                                    <option value="final">Final Warning</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Severity *</label>
+                                <div class="severity-options">
+                                    <div class="severity-option severity-low" onclick="selectSeverity(this, 'low')">
+                                        <strong>Low</strong>
+                                    </div>
+                                    <div class="severity-option severity-medium" onclick="selectSeverity(this, 'medium')">
+                                        <strong>Medium</strong>
+                                    </div>
+                                    <div class="severity-option severity-high" onclick="selectSeverity(this, 'high')">
+                                        <strong>High</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Violation/Issue Details *</label>
+                                <textarea placeholder="Describe the safety violation or issue..." required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Corrective Action Required *</label>
+                                <textarea placeholder="Actions required to rectify the issue..." required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Compliance Deadline</label>
+                                <input type="date">
+                            </div>
+                            <div class="form-group">
+                                <label>Issued By *</label>
+                                <input type="text" placeholder="Safety officer name" required>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-submit">Issue Advisory</button>
+                            <button type="button" class="btn btn-back" onclick="showPage('dashboardPage')">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stop Work Order Module -->
+    <div class="page" id="stopWork">
+        <div class="dashboard">
+            <div class="header">
+                <h1>Stop Work Order (SWO)</h1>
+                <button class="logout-btn" onclick="showPage('dashboardPage')">← Back to Dashboard</button>
+            </div>
+            <div class="content">
+                <div class="form-container">
+                    <div class="form-header">
+                        <h2>Issue Stop Work Order</h2>
+                    </div>
+                    <form onsubmit="handleSubmit(event, 'Stop Work Order')">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Date & Time *</label>
+                                <input type="datetime-local" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Location *</label>
+                                <input type="text" placeholder="Work location" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Contractor/Company *</label>
+                                <input type="text" placeholder="Company name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Work Activity Stopped *</label>
+                                <input type="text" placeholder="Type of work halted" required>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Reason for Stop Work *</label>
+                                <textarea placeholder="Detailed reason why work was stopped..." required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Immediate Hazards Identified *</label>
+                                <textarea placeholder="List all immediate hazards..." required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Corrective Actions Required *</label>
+                                <textarea placeholder="Actions needed before work can resume..." required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Ordered By *</label>
+                                <input type="text" placeholder="Safety officer name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Target Resumption Date</label>
+                                <input type="date">
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-submit">Issue Stop Work Order</button>
+                            <button type="button" class="btn btn-back" onclick="showPage('dashboardPage')">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- First Aid Case Module -->
+    <div class="page" id="firstAid">
+        <div class="dashboard">
+            <div class="header">
+                <h1>First-Aid Case</h1>
+                <button class="logout-btn" onclick="showPage('dashboardPage')">← Back to Dashboard</button>
+            </div>
+            <div class="content">
+                <div class="form-container">
+                    <div class="form-header">
+                        <h2>Log First-Aid Case</h2>
+                    </div>
+                    <form onsubmit="handleSubmit(event, 'First-Aid Case')">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Date & Time of Incident *</label>
+                                <input type="datetime-local" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Location *</label>
+                                <input type="text" placeholder="Incident location" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Injured Person Name *</label>
+                                <input type="text" placeholder="Full name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Employee/Contractor ID</label>
+                                <input type="text" placeholder="ID number">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Company/Contractor *</label>
+                                <input type="text" placeholder="Company name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Age</label>
+                                <input type="number" min="18" max="70" placeholder="Age">
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Type of Injury *</label>
+                                <select required>
+                                    <option value="">Select injury type</option>
+                                    <option value="cut">Cut/Laceration</option>
+                                    <option value="bruise">Bruise/Contusion</option>
+                                    <option value="burn">Burn</option>
+                                    <option value="sprain">Sprain/Strain</option>
+                                    <option value="eye">Eye Injury</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Injury Description *</label>
+                                <textarea placeholder="Describe the injury in detail..." required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>How Did Injury Occur? *</label>
+                                <textarea placeholder="Describe how the incident happened..." required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>First Aid Treatment Given *</label>
+                                <textarea placeholder="Detail the treatment provided..." required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Treated By *</label>
+                                <input type="text" placeholder="Name of first aider" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Return to Work?</label>
+                                <select>
+                                    <option value="yes">Yes - Returned to Work</option>
+                                    <option value="no">No - Sent Home</option>
+                                    <option value="hospital">Referred to Hospital</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-submit">Submit First-Aid Case</button>
+                            <button type="button" class="btn btn-back" onclick="showPage('dashboardPage')">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Near Miss Report Module -->
+    <div class="page" id="nearMiss">
+        <div class="dashboard">
+            <div class="header">
+                <h1>Near Miss Report</h1>
+                <button class="logout-btn" onclick="showPage('dashboardPage')">← Back to Dashboard</button>
+            </div>
+            <div class="content">
+                <div class="form-container">
+                    <div class="form-header">
+                        <h2>Report Near Miss Incident</h2>
+                    </div>
+                    <form onsubmit="handleSubmit(event, 'Near Miss Report')">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Date & Time *</label>
+                                <input type="datetime-local" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Location *</label>
+                                <input type="text" placeholder="Incident location" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Reported By *</label>
+                                <input type="text" placeholder="Name of reporter" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Contractor/Company</label>
+                                <input type="text" placeholder="Company name">
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Potential Consequence *</label>
+                                <div class="severity-options">
+                                    <div class="severity-option severity-low" onclick="selectSeverity(this, 'low')">
+                                        <strong>Minor</strong><br>Small injury
+                                    </div>
+                                    <div class="severity-option severity-medium" onclick="selectSeverity(this, 'medium')">
+                                        <strong>Serious</strong><br>Major injury
+                                    </div>
+                                    <div class="severity-option severity-high" onclick="selectSeverity(this, 'high')">
+                                        <strong>Fatal</strong><br>Life threatening
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Incident Description *</label>
+                                <textarea placeholder="Describe what happened that could have led to injury..." required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Root Cause Analysis *</label>
+                                <textarea placeholder="What were the underlying causes?" required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Preventive Actions Recommended *</label>
+                                <textarea placeholder="What actions can prevent this in future?" required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Action Owner</label>
+                                <input type="text" placeholder="Person responsible for actions">
+                            </div>
+                            <div class="form-group">
+                                <label>Target Completion Date</label>
+                                <input type="date">
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-submit">Submit Near Miss Report</button>
+                            <button type="button" class="btn btn-back" onclick="showPage('dashboardPage')">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dangerous Occurrence Module -->
+    <div class="page" id="dangerousOccurrence">
+        <div class="dashboard">
+            <div class="header">
+                <h1>Dangerous Occurrence</h1>
+                <button class="logout-btn" onclick="showPage('dashboardPage')">← Back to Dashboard</button>
+            </div>
+            <div class="content">
+                <div class="form-container">
+                    <div class="form-header">
+                        <h2>Log Dangerous Occurrence</h2>
+                    </div>
+                    <form onsubmit="handleSubmit(event, 'Dangerous Occurrence')">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Date & Time of Occurrence *</label>
+                                <input type="datetime-local" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Location *</label>
+                                <input type="text" placeholder="Exact location" required>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Type of Occurrence *</label>
+                                <select required>
+                                    <option value="">Select type</option>
+                                    <option value="collapse">Structural Collapse</option>
+                                    <option value="explosion">Explosion/Fire</option>
+                                    <option value="equipment">Equipment Failure</option>
+                                    <option value="fall">Fall from Height</option>
+                                    <option value="electrical">Electrical Incident</option>
+                                    <option value="chemical">Chemical Release</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Detailed Description *</label>
+                                <textarea placeholder="Provide comprehensive details of the occurrence..." required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Injuries/Casualties</label>
+                                <textarea placeholder="Any injuries or casualties?"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Property Damage</label>
+                                <textarea placeholder="Describe any property or equipment damage"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Immediate Actions Taken *</label>
+                                <textarea placeholder="What immediate actions were taken?" required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Reported To Authorities?</label>
+                                <select>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                    <option value="pending">Pending</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Investigation Required?</label>
+                                <select>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Reported By *</label>
+                                <input type="text" placeholder="Name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Designation *</label>
+                                <input type="text" placeholder="Job title" required>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-submit">Submit Occurrence Report</button>
+                            <button type="button" class="btn btn-back" onclick="showPage('dashboardPage')">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIC Meeting Module -->
+    <div class="page" id="sicMeeting">
+        <div class="dashboard">
+            <div class="header">
+                <h1>SIC Meeting</h1>
+                <button class="logout-btn" onclick="showPage('dashboardPage')">← Back to Dashboard</button>
+            </div>
+            <div class="content">
+                <div class="form-container">
+                    <div class="form-header">
+                        <h2>Document SIC Meeting</h2>
+                    </div>
+                    <form onsubmit="handleSubmit(event, 'SIC Meeting')">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Meeting Date *</label>
+                                <input type="date" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Meeting Time *</label>
+                                <input type="time" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Location/Venue *</label>
+                                <input type="text" placeholder="Meeting venue" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Number of Attendees *</label>
+                                <input type="number" min="1" required>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Chaired By (SIC) *</label>
+                                <input type="text" placeholder="Site In-Charge name" required>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Key Attendees</label>
+                                <textarea placeholder="List key attendees and their roles"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Agenda Items *</label>
+                                <textarea placeholder="Meeting agenda and discussion points..." required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Safety Issues Discussed *</label>
+                                <textarea placeholder="Detail all safety issues raised and discussed..." required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Action Items</label>
+                                <textarea placeholder="List action items and responsible persons"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Decisions Made</label>
+                                <textarea placeholder="Key decisions and resolutions"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Next Meeting Date</label>
+                                <input type="date">
+                            </div>
+                            <div class="form-group">
+                                <label>Minutes Recorded By *</label>
+                                <input type="text" placeholder="Name" required>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-submit">Submit Meeting Minutes</button>
+                            <button type="button" class="btn btn-back" onclick="showPage('dashboardPage')">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Good Practice Module -->
+    <div class="page" id="goodPractice">
+        <div class="dashboard">
+            <div class="header">
+                <h1>Good Practice</h1>
+                <button class="logout-btn" onclick="showPage('dashboardPage')">← Back to Dashboard</button>
+            </div>
+            <div class="content">
+                <div class="form-container">
+                    <div class="form-header">
+                        <h2>Record Good Practice</h2>
+                    </div>
+                    <form onsubmit="handleSubmit(event, 'Good Practice')">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Date *</label>
+                                <input type="date" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Location *</label>
+                                <input type="text" placeholder="Where observed" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Observed By *</label>
+                                <input type="text" placeholder="Your name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Contractor/Person *</label>
+                                <input type="text" placeholder="Who demonstrated good practice" required>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Category *</label>
+                                <select required>
+                                    <option value="">Select category</option>
+                                    <option value="ppe">Proper PPE Usage</option>
+                                    <option value="housekeeping">Excellent Housekeeping</option>
+                                    <option value="safety">Safety Innovation</option>
+                                    <option value="procedure">Following Procedures</option>
+                                    <option value="leadership">Safety Leadership</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Description of Good Practice *</label>
+                                <textarea placeholder="Describe the positive safety practice observed..." required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Why is this Notable?</label>
+                                <textarea placeholder="Why is this practice exemplary? What impact does it have?"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Can this be Replicated? *</label>
+                                <select required>
+                                    <option value="">Select option</option>
+                                    <option value="yes">Yes - Recommend for all sites</option>
+                                    <option value="limited">Yes - With modifications</option>
+                                    <option value="specific">Site-specific only</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Recognition Given</label>
+                                <textarea placeholder="How was this practice recognized or rewarded?"></textarea>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-submit">Submit Good Practice</button>
+                            <button type="button" class="btn btn-back" onclick="showPage('dashboardPage')">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rectification Module -->
+    <div class="page" id="rectification">
+        <div class="dashboard">
+            <div class="header">
+                <h1>Rectification Tracking</h1>
+                <button class="logout-btn" onclick="showPage('dashboardPage')">← Back to Dashboard</button>
+            </div>
+            <div class="content">
+                <div class="form-container">
+                    <div class="form-header">
+                        <h2>Update Rectification Status</h2>
+                    </div>
+                    <form onsubmit="handleSubmit(event, 'Rectification')">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Reference Number *</label>
+                                <input type="text" placeholder="e.g., OBS-2025-001" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Original Issue Date *</label>
+                                <input type="date" required>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Original Observation Type *</label>
+                                <select required>
+                                    <option value="">Select type</option>
+                                    <option value="safety_obs">Safety Observation</option>
+                                    <option value="saw">Safety Advisory Warning</option>
+                                    <option value="swo">Stop Work Order</option>
+                                    <option value="near_miss">Near Miss</option>
+                                    <option value="inspection">Inspection Finding</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Original Issue Summary</label>
+                                <textarea placeholder="Brief summary of the original issue"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Rectification Date *</label>
+                                <input type="date" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Verified By *</label>
+                                <input type="text" placeholder="Safety officer name" required>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Action Taken *</label>
+                                <textarea placeholder="Describe the corrective actions taken..." required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Verification Details *</label>
+                                <textarea placeholder="How was the rectification verified?" required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Status *</label>
+                                <select required>
+                                    <option value="">Select status</option>
+                                    <option value="completed">Completed - Satisfactory</option>
+                                    <option value="partial">Partially Completed</option>
+                                    <option value="pending">Still Pending</option>
+                                    <option value="extended">Deadline Extended</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Additional Comments</label>
+                                <textarea placeholder="Any additional remarks or follow-up needed"></textarea>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-submit">Submit Rectification Update</button>
+                            <button type="button" class="btn btn-back" onclick="showPage('dashboardPage')">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reports Page -->
+    <div class="page" id="reports">
+        <div class="dashboard">
+            <div class="header">
+                <h1>Reports & Analytics</h1>
+                <button class="logout-btn" onclick="showPage('dashboardPage')">← Back to Dashboard</button>
+            </div>
+            <div class="content">
+                <div class="filter-section">
+                    <h3 style="margin-bottom: 20px; color: #333;">Filter Reports</h3>
+                    <div class="filter-row">
+                        <div class="form-group">
+                            <label>Report Type</label>
+                            <select id="reportType">
+                                <option value="all">All Activities</option>
+                                <option value="observation">Safety Observations</option>
+                                <option value="training">Training Records</option>
+                                <option value="incidents">Incidents & Near Miss</option>
+                                <option value="meetings">Meetings</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date From</label>
+                            <input type="date" id="dateFrom">
+                        </div>
+                        <div class="form-group">
+                            <label>Date To</label>
+                            <input type="date" id="dateTo">
+                        </div>
+                        <div class="form-group">
+                            <label>Project</label>
+                            <select id="projectFilter">
+                                <option value="all">All Projects</option>
+                                <option value="metro">Metro Rail - Phase 3</option>
+                                <option value="highway">Highway Expansion</option>
+                                <option value="commercial">Commercial Complex</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn" onclick="filterReports()">Generate Report</button>
+                    <button class="btn btn-back" onclick="exportReport()">Export to Excel</button>
+                </div>
+
+                <h3 style="margin-bottom: 20px; color: #333;">Recent Safety Activities</h3>
+                <div id="reportTableContainer">
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Location</th>
+                                <th>Severity</th>
+                                <th>Status</th>
+                                <th>Officer</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportTableBody">
+                            <tr>
+                                <td>Oct 21, 2025</td>
+                                <td>Safety Observation</td>
+                                <td>Building A - Floor 5</td>
+                                <td><span class="badge badge-danger">High</span></td>
+                                <td><span class="badge badge-warning">Pending</span></td>
+                                <td>John Doe</td>
+                                <td><button class="btn" style="padding: 8px 15px; font-size: 0.9em;">View</button></td>
+                            </tr>
+                            <tr>
+                                <td>Oct 21, 2025</td>
+                                <td>Daily Training</td>
+                                <td>Site Office</td>
+                                <td><span class="badge badge-info">Low</span></td>
+                                <td><span class="badge badge-success">Completed</span></td>
+                                <td>Jane Smith</td>
+                                <td><button class="btn" style="padding: 8px 15px; font-size: 0.9em;">View</button></td>
+                            </tr>
+                            <tr>
+                                <td>Oct 20, 2025</td>
+                                <td>Near Miss</td>
+                                <td>Excavation Zone</td>
+                                <td><span class="badge badge-warning">Medium</span></td>
+                                <td><span class="badge badge-success">Closed</span></td>
+                                <td>Mike Johnson</td>
+                                <td><button class="btn" style="padding: 8px 15px; font-size: 0.9em;">View</button></td>
+                            </tr>
+                            <tr>
+                                <td>Oct 20, 2025</td>
+                                <td>First Aid Case</td>
+                                <td>Carpentry Workshop</td>
+                                <td><span class="badge badge-info">Low</span></td>
+                                <td><span class="badge badge-success">Treated</span></td>
+                                <td>Sarah Lee</td>
+                                <td><button class="btn" style="padding: 8px 15px; font-size: 0.9em;">View</button></td>
+                            </tr>
+                            <tr>
+                                <td>Oct 19, 2025</td>
+                                <td>SIC Meeting</td>
+                                <td>Main Office</td>
+                                <td><span class="badge badge-info">Low</span></td>
+                                <td><span class="badge badge-success">Completed</span></td>
+                                <td>John Doe</td>
+                                <td><button class="btn" style="padding: 8px 15px; font-size: 0.9em;">View</button></td>
+                            </tr>
+                            <tr>
+                                <td>Oct 19, 2025</td>
+                                <td>Safety Advisory</td>
+                                <td>Building B - Ground Floor</td>
+                                <td><span class="badge badge-warning">Medium</span></td>
+                                <td><span class="badge badge-warning">Action Required</span></td>
+                                <td>Mike Johnson</td>
+                                <td><button class="btn" style="padding: 8px 15px; font-size: 0.9em;">View</button></td>
+                            </tr>
+                            <tr>
+                                <td>Oct 18, 2025</td>
+                                <td>Induction Training</td>
+                                <td>Training Hall</td>
+                                <td><span class="badge badge-info">Low</span></td>
+                                <td><span class="badge badge-success">Completed</span></td>
+                                <td>Jane Smith</td>
+                                <td><button class="btn" style="padding: 8px 15px; font-size: 0.9em;">View</button></td>
+                            </tr>
+                            <tr>
+                                <td>Oct 18, 2025</td>
+                                <td>Good Practice</td>
+                                <td>Material Storage Area</td>
+                                <td><span class="badge badge-success">Positive</span></td>
+                                <td><span class="badge badge-success">Recognized</span></td>
+                                <td>Sarah Lee</td>
+                                <td><button class="btn" style="padding: 8px 15px; font-size: 0.9em;">View</button></td>
+                            </tr>
+                            <tr>
+                                <td>Oct 17, 2025</td>
+                                <td>Stop Work Order</td>
+                                <td>Tower Crane Area</td>
+                                <td><span class="badge badge-danger">High</span></td>
+                                <td><span class="badge badge-warning">Work Stopped</span></td>
+                                <td>John Doe</td>
+                                <td><button class="btn" style="padding: 8px 15px; font-size: 0.9em;">View</button></td>
+                            </tr>
+                            <tr>
+                                <td>Oct 17, 2025</td>
+                                <td>Special Training</td>
+                                <td>Training Center</td>
+                                <td><span class="badge badge-info">Low</span></td>
+                                <td><span class="badge badge-success">Completed</span></td>
+                                <td>Mike Johnson</td>
+                                <td><button class="btn" style="padding: 8px 15px; font-size: 0.9em;">View</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedSeverity = '';
+
+        function showPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const empId = document.getElementById('empId').value;
+            const project = document.getElementById('project').selectedOptions[0].text;
+            
+            if (empId && project) {
+                document.getElementById('userName').textContent = empId + ' - ' + project;
+                showPage('dashboardPage');
+            }
+        }
+
+        function selectSeverity(element, severity) {
+            const siblings = element.parentElement.children;
+            for (let sibling of siblings) {
+                sibling.classList.remove('selected');
+            }
+            element.classList.add('selected');
+            selectedSeverity = severity;
+            
+            const hiddenInput = document.getElementById('severityValue');
+            if (hiddenInput) {
+                hiddenInput.value = severity;
+            }
+        }
+
+        function handleSubmit(event, formType) {
+            event.preventDefault();
+            
+            // Create success message
+            const form = event.target;
+            const successMsg = document.createElement('div');
+            successMsg.className = 'success-message';
+            successMsg.innerHTML = `✓ ${formType} submitted successfully! Reference ID: ${generateRefId()}`;
+            
+            // Insert success message before form
+            form.parentElement.insertBefore(successMsg, form);
+            
+            // Reset form
+            form.reset();
+            
+            // Remove selected severity
+            const severityOptions = form.querySelectorAll('.severity-option');
+            severityOptions.forEach(option => option.classList.remove('selected'));
+            
+            // Scroll to top to show success message
+            window.scrollTo(0, 0);
+            
+            // Remove success message after 5 seconds
+            setTimeout(() => {
+                successMsg.remove();
+            }, 5000);
+            
+            // Optionally redirect to dashboard after 2 seconds
+            setTimeout(() => {
+                if (confirm('Form submitted! Go back to dashboard?')) {
+                    showPage('dashboardPage');
+                }
+            }, 2000);
+        }
+
+        function generateRefId() {
+            const date = new Date();
+            const year = date.getFullYear();
+            const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+            return `REF-${year}-${random}`;
+        }
+
+        function filterReports() {
+            const type = document.getElementById('reportType').value;
+            const dateFrom = document.getElementById('dateFrom').value;
+            const dateTo = document.getElementById('dateTo').value;
+            const project = document.getElementById('projectFilter').value;
+            
+            alert(`Filtering reports:\nType: ${type}\nDate Range: ${dateFrom} to ${dateTo}\nProject: ${project}\n\nIn production, this would filter the table data.`);
+        }
+
+        function exportReport() {
+            alert('Exporting report to Excel...\n\nIn production, this would generate and download an Excel file with all filtered data.');
+        }
+
+        // Set current date as default for date inputs
+        window.addEventListener('load', function() {
+            const today = new Date().toISOString().split('T')[0];
+            const dateInputs = document.querySelectorAll('input[type="date"]');
+            dateInputs.forEach(input => {
+                if (!input.value && input.closest('form')) {
+                    input.value = today;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
